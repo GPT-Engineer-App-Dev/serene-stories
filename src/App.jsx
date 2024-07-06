@@ -5,12 +5,30 @@ import { Home } from "lucide-react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Layout from "./layouts/default"; // available: default, navbar, sidebar
 import Index from "./pages/Index.jsx";
+import About from "./pages/About.jsx";
+import Blog from "./pages/Blog.jsx";
+import Contact from "./pages/Contact.jsx";
 const queryClient = new QueryClient();
 
 export const navItems = [
   {
     title: "Home", // Feel free to change this to your liking
     to: "/",
+    icon: <Home className="h-4 w-4" />,
+  },
+  {
+    title: "About",
+    to: "/about",
+    icon: <Home className="h-4 w-4" />,
+  },
+  {
+    title: "Blog",
+    to: "/blog",
+    icon: <Home className="h-4 w-4" />,
+  },
+  {
+    title: "Contact",
+    to: "/contact",
     icon: <Home className="h-4 w-4" />,
   },
 ];
@@ -24,6 +42,9 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Index />} />
+              <Route path="about" element={<About />} />
+              <Route path="blog" element={<Blog />} />
+              <Route path="contact" element={<Contact />} />
               {/* Add more routes here as needed */}
             </Route>
           </Routes>
