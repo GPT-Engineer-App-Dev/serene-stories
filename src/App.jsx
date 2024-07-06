@@ -3,18 +3,20 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Home } from "lucide-react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import Layout from "./layouts/default"; // available: default, navbar, sidebar
+import Layout from "./layouts/navbar"; // Changed to use navbar layout
 import Index from "./pages/Index.jsx";
 import About from "./pages/About.jsx";
 import Blog from "./pages/Blog.jsx";
 import Contact from "./pages/Contact.jsx";
 import AddBlogPost from "./pages/AddBlogPost.jsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getTheme, setTheme } from "@/lib/utils";
+
 const queryClient = new QueryClient();
 
 export const navItems = [
   {
-    title: "Home", // Feel free to change this to your liking
+    title: "Home",
     to: "/",
     icon: <Home className="h-4 w-4" />,
   },
@@ -42,10 +44,21 @@ export const navItems = [
 
 const App = () => {
   const [blogPosts, setBlogPosts] = useState([]);
+  const [theme, setCurrentTheme] = useState(getTheme());
 
   const addBlogPost = (newPost) => {
     setBlogPosts([...blogPosts, newPost]);
   };
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setCurrentTheme(newTheme);
+    setTheme(newTheme);
+  };
+
+  useEffect(() => {
+    document.body.className = theme;
+  }, [theme]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -53,13 +66,12 @@ const App = () => {
         <Toaster />
         <Router>
           <Routes>
-            <Route path="/" element={<Layout />}>
+            <Route path="/" element={<Layout theme={theme} toggleTheme={toggleTheme} />}>
               <Route index element={<Index />} />
               <Route path="about" element={<About />} />
-              <Route path="blog" element={<Blog />} />
+              <Route path="blog" element={<Blog blogPosts={blogPosts} />} />
               <Route path="contact" element={<Contact />} />
               <Route path="add-blog-post" element={<AddBlogPost addBlogPost={addBlogPost} />} />
-              {/* Add more routes here as needed */}
             </Route>
           </Routes>
         </Router>

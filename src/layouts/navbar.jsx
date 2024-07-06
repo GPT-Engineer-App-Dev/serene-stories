@@ -12,23 +12,25 @@ import { cn } from "@/lib/utils";
 import { CircleUser, Menu, Package2, Search } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { navItems } from "../App";
+import ThemeToggle from "@/components/ThemeToggle";
 
-const Layout = () => {
+const Layout = ({ theme, toggleTheme }) => {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 justify-between">
         <div className="flex items-center gap-4">
-          <NavItem
+          <NavLink
             to="/"
             className="flex items-center gap-2 text-lg font-semibold md:text-base"
           >
             <Package2 className="h-6 w-6" />
             <span className="sr-only">Acme Inc</span>
-          </NavItem>
+          </NavLink>
           <DesktopNav />
         </div>
         <div className="flex items-center gap-4">
           <SearchBar />
+          <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
           <MobileNav />
           <UserMenu />
         </div>
@@ -42,36 +44,55 @@ const Layout = () => {
 };
 
 const DesktopNav = () => (
-  <nav className="hidden md:flex md:items-center md:gap-5 lg:gap-6 text-lg font-medium md:text-sm">
+  <nav className="hidden md:flex gap-6">
     {navItems.map((item) => (
-      <NavItem key={item.to} to={item.to}>
+      <NavLink
+        key={item.to}
+        to={item.to}
+        className={({ isActive }) =>
+          cn(
+            "text-sm font-medium transition-colors hover:text-primary",
+            isActive ? "text-primary" : "text-muted-foreground"
+          )
+        }
+      >
         {item.title}
-      </NavItem>
+      </NavLink>
     ))}
   </nav>
+);
+
+const SearchBar = () => (
+  <form className="hidden md:block">
+    <div className="relative">
+      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+      <input
+        type="search"
+        placeholder="Search..."
+        className="pl-8 h-9 w-64 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+      />
+    </div>
+  </form>
 );
 
 const MobileNav = () => (
   <Sheet>
     <SheetTrigger asChild>
-      <Button variant="outline" size="icon" className="shrink-0 md:hidden">
+      <Button variant="ghost" className="md:hidden" size="icon">
         <Menu className="h-5 w-5" />
-        <span className="sr-only">Toggle navigation menu</span>
+        <span className="sr-only">Toggle menu</span>
       </Button>
     </SheetTrigger>
     <SheetContent side="left">
-      <nav className="grid gap-6 text-lg font-medium">
-        <NavItem
-          to="/"
-          className="flex items-center gap-2 text-lg font-semibold"
-        >
-          <Package2 className="h-6 w-6" />
-          <span className="sr-only">Acme Inc</span>
-        </NavItem>
+      <nav className="flex flex-col gap-4">
         {navItems.map((item) => (
-          <NavItem key={item.to} to={item.to}>
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className="text-sm font-medium transition-colors hover:text-primary"
+          >
             {item.title}
-          </NavItem>
+          </NavLink>
         ))}
       </nav>
     </SheetContent>
@@ -81,70 +102,31 @@ const MobileNav = () => (
 const UserMenu = () => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
-      <Button variant="secondary" size="icon" className="rounded-full">
+      <Button variant="ghost" className="relative h-8 w-8 rounded-full">
         <CircleUser className="h-5 w-5" />
-        <span className="sr-only">Toggle user menu</span>
       </Button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="end">
-      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+    <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuLabel className="font-normal">
+        <div className="flex flex-col space-y-1">
+          <p className="text-sm font-medium leading-none">John Doe</p>
+          <p className="text-xs leading-none text-muted-foreground">
+            john@example.com
+          </p>
+        </div>
+      </DropdownMenuLabel>
       <DropdownMenuSeparator />
+      <DropdownMenuItem>Profile</DropdownMenuItem>
       <DropdownMenuItem>Settings</DropdownMenuItem>
-      <DropdownMenuItem>Support</DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem>Logout</DropdownMenuItem>
+      <DropdownMenuItem>Log out</DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
 );
 
-const SearchBar = () => (
-  <div className="relative">
-    <input
-      type="text"
-      placeholder="Search..."
-      className="border rounded-full px-4 py-2"
-    />
-    <Button variant="outline" size="icon" className="absolute right-2 top-1/2 transform -translate-y-1/2">
-      <Search className="h-5 w-5" />
-      <span className="sr-only">Search</span>
-    </Button>
-  </div>
-);
-
 const Footer = () => (
-  <footer className="border-t bg-background py-4 text-center">
-    <div className="flex justify-center gap-4 mb-2">
-      <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-        Facebook
-      </a>
-      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-        Twitter
-      </a>
-      <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-        Instagram
-      </a>
-    </div>
-    <p className="text-sm text-muted-foreground">
-      &copy; {new Date().getFullYear()} Acme Inc. All rights reserved.
-    </p>
+  <footer className="border-t py-4 text-center text-sm text-muted-foreground">
+    © 2023 Acme Inc. All rights reserved.
   </footer>
-);
-
-const NavItem = ({ to, children, className }) => (
-  <NavLink
-    to={to}
-    className={({ isActive }) =>
-      cn(
-        "transition-colors",
-        isActive
-          ? "text-foreground"
-          : "text-muted-foreground hover:text-foreground",
-        className,
-      )
-    }
-  >
-    {children}
-  </NavLink>
 );
 
 export default Layout;
