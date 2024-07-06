@@ -8,6 +8,8 @@ import Index from "./pages/Index.jsx";
 import About from "./pages/About.jsx";
 import Blog from "./pages/Blog.jsx";
 import Contact from "./pages/Contact.jsx";
+import AddBlogPost from "./pages/AddBlogPost.jsx";
+import { useState } from "react";
 const queryClient = new QueryClient();
 
 export const navItems = [
@@ -31,9 +33,20 @@ export const navItems = [
     to: "/contact",
     icon: <Home className="h-4 w-4" />,
   },
+  {
+    title: "Add Blog Post",
+    to: "/add-blog-post",
+    icon: <Home className="h-4 w-4" />,
+  },
 ];
 
 const App = () => {
+  const [blogPosts, setBlogPosts] = useState([]);
+
+  const addBlogPost = (newPost) => {
+    setBlogPosts([...blogPosts, newPost]);
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -45,6 +58,7 @@ const App = () => {
               <Route path="about" element={<About />} />
               <Route path="blog" element={<Blog />} />
               <Route path="contact" element={<Contact />} />
+              <Route path="add-blog-post" element={<AddBlogPost addBlogPost={addBlogPost} />} />
               {/* Add more routes here as needed */}
             </Route>
           </Routes>
